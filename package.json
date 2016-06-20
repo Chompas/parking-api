@@ -1,0 +1,16 @@
+{
+  "name": "parking-api",
+  "version": "1.0.0",
+  "description": "Parking API",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "Emiliano Viscarra",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.13.3",
+    "express": "^4.13.3",
+    "mongoose": "^4.5.1"
+  }
+}
