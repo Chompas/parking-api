@@ -1,9 +1,11 @@
 var express     =   require("express");
 var app         =   express();
 var bodyParser  =   require("body-parser");
-var Parking     =   require("./models/parking");
-var router      =   express.Router();
 var mongoose    =   require("mongoose");
+var Parking     =   require("./models/parking");
+var Booking     =   require("./models/booking");
+var router      =   express.Router();
+var randomstring =  require("randomstring");
 mongoose.connect('mongodb://localhost:27017/parking');
 var port = process.env.PORT || 3000;
 
@@ -82,11 +84,26 @@ router.route('/parkings/:parking_id')
         });
     });
 
+router.route("/bookings")
+    // GET Parkings
+    .get(function(req, res) {
+        Booking.find().populate('parking').exec(function(err, bookings) {
+            if (err) {
+                res.send(err);
+            }
+
+            res.json(bookings);
+        });
+    });
+
 router.route('/book/:parking_id')
     .post(function(req, res) {
         Parking.findById(req.params.parking_id, function(err, parking) {
             if (err) {
                 res.send(err);
+            }
+            if (!parking) {
+                return res.json({ message: 'Parking not found'});
             }
             if (parking.occupancy == 0) {
                 return res.json({ message: 'This parking is full :('});
@@ -98,11 +115,23 @@ router.route('/book/:parking_id')
                 if (err) {
                     res.send(err);
                 }
-                res.json({ message: 'Parking Booked!' });
+
+                var booking = new Booking();
+                booking.user = req.body.user;
+                booking.parking = parking.id;
+                booking.reservationCode = randomstring.generate();
+
+                booking.save(function(err) {
+                    if (err)
+                        res.send(err);
+
+                    res.json({  message: 'Parking Booked!',
+                                booking: booking });
+                });
             });
 
         });
-    })
+    });
 
 app.use('/',router);
 

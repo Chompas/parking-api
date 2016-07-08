@@ -1,5 +1,5 @@
-var mongoose     = require('mongoose');
-var Schema =   mongoose.Schema;
+var mongoose  =   require('mongoose');
+var Schema    =   mongoose.Schema;
 // create schema
 var parkingSchema  = new Schema({
     "name" : String,
